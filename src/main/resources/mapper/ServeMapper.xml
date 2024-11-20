@@ -4,4 +4,7 @@
 
 
 
+    <select id="queryServeListByRegionId" resultType="com.jzo2o.foundations.model.dto.response.ServeResDTO">
+select st.id serve_type_id ,st.name serve_type_name,s.id,s.serve_item_id,s.region_id,s.city_code,si.reference_price,si.name serve_item_name,s.sale_status,s.price,s.is_hot,s.create_time,s.update_time from serve s inner join serve_item si on s.serve_item_id=si.id inner join serve_type st on st.id=si.serve_type_id where s.region_id = #{regionId}
+    </select>
 </mapper>
