@@ -1,12 +1,15 @@
 package com.jzo2o.foundations.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.extension.conditions.update.UpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jzo2o.common.expcetions.CommonException;
 import com.jzo2o.common.expcetions.ForbiddenOperationException;
 import com.jzo2o.common.model.PageResult;
 import com.jzo2o.foundations.enums.FoundationStatusEnum;
 import com.jzo2o.foundations.mapper.ServeMapper;
 import com.jzo2o.foundations.model.domain.Serve;
+import com.jzo2o.foundations.model.domain.ServeItem;
 import com.jzo2o.foundations.model.dto.request.ServePageQueryReqDTO;
 import com.jzo2o.foundations.model.dto.request.ServeUpsertReqDTO;
 import com.jzo2o.foundations.model.dto.response.ServeResDTO;
@@ -18,6 +21,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +56,66 @@ public class ServeServiceImpl extends ServiceImpl<ServeMapper, Serve> implements
             serves.add(serve);
         }
         saveBatch(serves);
+    }
+
+    @Override
+    public Serve changePrice(Long id, BigDecimal price) {
+        boolean update = update().eq("id", id).set("price", price).update();
+        if(!update){
+            throw new CommonException("修改价格失败");
+        }
+        return getById(id);
+
+    }
+
+    @Override
+    public Serve onSale(Long id) {
+        Serve byId = getById(id);
+        if(byId==null){
+            throw new ForbiddenOperationException("服务不存在");
+        }
+        Long serveItemId = byId.getServeItemId();
+        ServeItem byId1 = serveItemService.getById(serveItemId);
+        if(byId.getSaleStatus()== FoundationStatusEnum.ENABLE.getStatus()){
+            throw new ForbiddenOperationException("服务已上架");
+        }
+        boolean update = update().eq("id", id).set("sale_status", FoundationStatusEnum.ENABLE.getStatus()).update();
+        if(!update){
+            throw new CommonException("上架失败");
+        }
+        return getById(id);
+    }
+
+    @Override
+    public Serve offsale(Long id) {
+        Serve byId = getById(id);
+        if(byId==null){
+            throw new ForbiddenOperationException("服务不存在");
+        }
+        if(byId.getSaleStatus()== FoundationStatusEnum.DISABLE.getStatus()){
+            throw new ForbiddenOperationException("服务已下架");
+        }
+        boolean update = update().eq("id", id).set("sale_status", FoundationStatusEnum.DISABLE.getStatus()).update();
+        if(!update){
+            throw new CommonException("下架失败");
+        }
+        return byId;
+    }
+
+    @Override
+    public Serve deleteServe(Long id) {
+        Serve byId = getById(id);
+        if(byId==null){
+            throw new ForbiddenOperationException("服务不存在");
+        }
+        if(byId.getSaleStatus()!= FoundationStatusEnum.INIT.getStatus()){
+            throw new ForbiddenOperationException("服务无法删除");
+        }
+        boolean removeById = removeById(id);
+        if(!removeById){
+            throw new CommonException("删除失败");
+        }
+        return byId;
     }
 
 

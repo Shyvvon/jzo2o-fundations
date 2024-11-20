@@ -7,6 +7,7 @@ import com.jzo2o.foundations.model.dto.request.ServePageQueryReqDTO;
 import com.jzo2o.foundations.model.dto.request.ServeUpsertReqDTO;
 import com.jzo2o.foundations.model.dto.response.ServeResDTO;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface IServeService extends IService<Serve> {
@@ -14,4 +15,12 @@ public interface IServeService extends IService<Serve> {
 
 
     void batchAdd(List<ServeUpsertReqDTO> serveUpsertReqDTOS);
+
+    Serve changePrice(Long id, BigDecimal price);
+
+    Serve onSale(Long id);
+
+    Serve offsale(Long id);
+
+    Serve deleteServe(Long id);
 }

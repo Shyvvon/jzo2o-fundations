@@ -1,6 +1,7 @@
 package com.jzo2o.foundations.controller.operation;
 
 import com.jzo2o.common.model.PageResult;
+import com.jzo2o.foundations.model.domain.Serve;
 import com.jzo2o.foundations.model.dto.request.ServePageQueryReqDTO;
 import com.jzo2o.foundations.model.dto.request.ServeUpsertReqDTO;
 import com.jzo2o.foundations.model.dto.response.ServeResDTO;
@@ -11,6 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController("operationServeController")
@@ -29,5 +31,25 @@ public class ServeController {
     @ApiOperation("区域服务批量新增")
     public void batchAdd(@RequestBody List<ServeUpsertReqDTO> serveUpsertReqDTOS){
         serveService.batchAdd(serveUpsertReqDTOS);
+    }
+    @PutMapping("/{id}")
+    @ApiOperation("修改价格")
+    public void changePrice(@PathVariable Long id, @RequestParam("price") BigDecimal price){
+        serveService.changePrice(id, price);
+    }
+    @PutMapping("/onSale/{id}")
+    @ApiOperation("上架服务")
+    public void onSale(@PathVariable Long id){
+        serveService.onSale(id);
+    }
+    @PutMapping("/offSale/{id}")
+    @ApiOperation("下架服务")
+    public void offsale(@PathVariable Long id){
+        serveService.offsale(id);
+    }
+    @DeleteMapping("{id}")
+    @ApiOperation("删除服务")
+    public void deleteServe(@PathVariable Long id){
+        serveService.deleteServe(id);
     }
 }
