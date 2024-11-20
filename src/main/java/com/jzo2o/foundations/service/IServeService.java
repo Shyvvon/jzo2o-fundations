@@ -13,4 +13,5 @@ public interface IServeService extends IService<Serve> {
     PageResult<ServeResDTO> page(ServePageQueryReqDTO servePageReqDTO);
 
 
+    void batchAdd(List<ServeUpsertReqDTO> serveUpsertReqDTOS);
 }

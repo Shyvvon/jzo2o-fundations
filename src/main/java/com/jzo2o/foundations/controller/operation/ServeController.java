@@ -25,5 +25,9 @@ public class ServeController {
         return serveService.page(servePageReqDTO);
     }
 
-
+    @PostMapping("/batch")
+    @ApiOperation("区域服务批量新增")
+    public void batchAdd(@RequestBody List<ServeUpsertReqDTO> serveUpsertReqDTOS){
+        serveService.batchAdd(serveUpsertReqDTOS);
+    }
 }
