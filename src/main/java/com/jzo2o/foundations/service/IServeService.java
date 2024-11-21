@@ -23,4 +23,8 @@ public interface IServeService extends IService<Serve> {
     Serve offsale(Long id);
 
     Serve deleteServe(Long id);
+
+    Serve onHot(Long id);
+
+    Serve offHot(Long id);
 }

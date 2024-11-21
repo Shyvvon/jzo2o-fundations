@@ -95,7 +95,7 @@ public class ServeServiceImpl extends ServiceImpl<ServeMapper, Serve> implements
         if(byId.getSaleStatus()== FoundationStatusEnum.DISABLE.getStatus()){
             throw new ForbiddenOperationException("服务已下架");
         }
-        boolean update = update().eq("id", id).set("sale_status", FoundationStatusEnum.DISABLE.getStatus()).update();
+        boolean update = update().eq("id", id).set("sale_status", FoundationStatusEnum.DISABLE.getStatus()).set("is_hot",0).update();
         if(!update){
             throw new CommonException("下架失败");
         }
@@ -116,6 +116,42 @@ public class ServeServiceImpl extends ServiceImpl<ServeMapper, Serve> implements
             throw new CommonException("删除失败");
         }
         return byId;
+    }
+
+    @Override
+    public Serve onHot(Long id) {
+        Serve byId = getById(id);
+        if(byId==null){
+            throw new ForbiddenOperationException("服务不存在");
+        }
+        if(byId.getSaleStatus()== FoundationStatusEnum.INIT.getStatus()||byId.getSaleStatus()== FoundationStatusEnum.DISABLE.getStatus()){
+            throw new ForbiddenOperationException("服务未上架");
+        }
+        if(byId.getIsHot()==1){
+            throw new ForbiddenOperationException("服务已设为热门");
+        }
+        boolean update = update().eq("id", id).eq("is_hot",0).set("is_hot", 1).set("hot_time_stamp", System.currentTimeMillis()).update();
+        if(!update){
+            throw new CommonException("设为热门失败");
+        }
+        return getById(id);
+
+    }
+
+    @Override
+    public Serve offHot(Long id) {
+        Serve byId = getById(id);
+        if(byId==null){
+            throw new ForbiddenOperationException("服务不存在");
+        }
+        if(byId.getIsHot()==0){
+            throw new ForbiddenOperationException("已取消热门");
+        }
+        boolean update = update().eq("id", id).eq("is_hot",1).set("is_hot", 0).update();
+        if(!update){
+            throw new CommonException("取消热门失败");
+        }
+        return getById(id);
     }
 
 
