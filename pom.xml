@@ -4,6 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <groupId>com.jzo2o</groupId>
     <artifactId>jzo2o-foundations</artifactId>
     <version>1.0-SNAPSHOT</version>
 
@@ -27,20 +28,10 @@
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
-         <dependency>
-       <groupId>org.hibernate.validator</groupId>
-       <artifactId>hibernate-validator</artifactId>
-       <version>6.0.18.Final</version>
-   </dependency>
-   <dependency>
-       <groupId>javax.validation</groupId>
-       <artifactId>validation-api</artifactId>
-       <version>2.0.1.Final</version>
-   </dependency>
+
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
-            <version>3.1.6</version>
         </dependency>
         <dependency>
             <groupId>com.jzo2o</groupId>
@@ -73,10 +64,7 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
-<dependency>
-            <groupId>com.jzo2o</groupId>
-            <artifactId>jzo2o-common</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>com.jzo2o</groupId>
             <artifactId>jzo2o-redis</artifactId>

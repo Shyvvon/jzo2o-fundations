@@ -41,11 +41,11 @@ import java.util.List;
 @Service
 public class RegionServiceImpl extends ServiceImpl<RegionMapper, Region> implements IRegionService {
     @Resource
+    private IServeService serveService;
+    @Resource
     private IConfigRegionService configRegionService;
     @Resource
     private CityDirectoryMapper cityDirectoryMapper;
-    @Resource
-    private IServeService serveService;
 
 
     /**
@@ -147,12 +147,6 @@ public class RegionServiceImpl extends ServiceImpl<RegionMapper, Region> impleme
      * @param id 区域id
      */
     @Override
-    @Caching(evict = {
-            @CacheEvict(value = RedisConstants.CacheName.JZ_CACHE, key = "'ACTIVE_REGIONS'", beforeInvocation = true),
-            @CacheEvict(value = RedisConstants.CacheName.SERVE_ICON, key = "#id", beforeInvocation = true),
-            @CacheEvict(value = RedisConstants.CacheName.HOT_SERVE, key = "#id", beforeInvocation = true),
-            @CacheEvict(value = RedisConstants.CacheName.SERVE_TYPE, key = "#id", beforeInvocation = true)
-    })
     public void active(Long id) {
         //区域信息
         Region region = baseMapper.selectById(id);
@@ -163,10 +157,12 @@ public class RegionServiceImpl extends ServiceImpl<RegionMapper, Region> impleme
             throw new ForbiddenOperationException("草稿或禁用状态方可启用");
         }
         //如果需要启用区域，需要校验该区域下是否有上架的服务
-        Integer count = serveService.query().eq("region_id", id).eq("sale_status", 2).count();
-        if(count==0){
-            throw new ForbiddenOperationException("该区域下没有上架的服务");
+        int count = serveService.queryServeCountByRegionIdAndSaleStatus(id, FoundationStatusEnum.ENABLE.getStatus());
+        if (count <= 0) {
+            //如果区域下不存在上架的服务，不允许启用
+            throw new ForbiddenOperationException("区域下不存在上架的服务，不允许启用");
         }
+
         //更新启用状态
         LambdaUpdateWrapper<Region> updateWrapper = Wrappers.<Region>lambdaUpdate()
                 .eq(Region::getId, id)
@@ -183,12 +179,6 @@ public class RegionServiceImpl extends ServiceImpl<RegionMapper, Region> impleme
      * @param id 区域id
      */
     @Override
-    @Caching(evict = {
-            @CacheEvict(value = RedisConstants.CacheName.JZ_CACHE, key = "'ACTIVE_REGIONS'", beforeInvocation = true),
-            @CacheEvict(value = RedisConstants.CacheName.SERVE_ICON, key = "#id", beforeInvocation = true),
-            @CacheEvict(value = RedisConstants.CacheName.HOT_SERVE, key = "#id", beforeInvocation = true),
-            @CacheEvict(value = RedisConstants.CacheName.SERVE_TYPE, key = "#id", beforeInvocation = true)
-    })
     public void deactivate(Long id) {
         //区域信息
         Region region = baseMapper.selectById(id);
@@ -199,11 +189,11 @@ public class RegionServiceImpl extends ServiceImpl<RegionMapper, Region> impleme
             throw new ForbiddenOperationException("启用状态方可禁用");
         }
 
-
-        Integer count = serveService.query().eq("region_id", id).eq("sale_status", 2).count();
+        //1.如果禁用区域下有上架的服务则无法禁用
+        int count = serveService.queryServeCountByRegionIdAndSaleStatus(id, FoundationStatusEnum.ENABLE.getStatus());
         if (count > 0) {
-         throw new ForbiddenOperationException("区域下有上架的服务无法禁用");
-     }
+            throw new ForbiddenOperationException("区域下有上架的服务无法禁用");
+        }
 
         //更新禁用状态
         LambdaUpdateWrapper<Region> updateWrapper = Wrappers.<Region>lambdaUpdate()
@@ -218,7 +208,6 @@ public class RegionServiceImpl extends ServiceImpl<RegionMapper, Region> impleme
      * @return 区域简略列表
      */
     @Override
-    @Cacheable(value = RedisConstants.CacheName.JZ_CACHE, key = "'ACTIVE_REGIONS'", cacheManager = RedisConstants.CacheManager.FOREVER)
     public List<RegionSimpleResDTO> queryActiveRegionListCache() {
         return queryActiveRegionList();
     }

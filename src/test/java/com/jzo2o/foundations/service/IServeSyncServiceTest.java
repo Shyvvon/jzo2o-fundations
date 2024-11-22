@@ -1,4 +1,4 @@
-package com.jzo2o.foundations.service;//package com.jzo2o.foundations.service;
+//package com.jzo2o.foundations.service;
 //
 //import com.jzo2o.es.core.ElasticSearchTemplate;
 //import com.jzo2o.foundations.constants.IndexConstants;

@@ -1,4 +1,4 @@
-package com.jzo2o.foundations.client;//package com.jzo2o.foundations.client;
+//package com.jzo2o.foundations.client;
 //
 //import co.elastic.clients.elasticsearch.ElasticsearchClient;
 //import co.elastic.clients.elasticsearch.indices.CreateIndexResponse;
